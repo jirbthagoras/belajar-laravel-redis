@@ -130,5 +130,47 @@ class RedisTest extends TestCase
 
     }
 
+    public function testPipeline()
+    {
+
+        Redis::pipeline(function ($pipeline) {
+            $pipeline->setex("name", 2, "Jabriel");
+            $pipeline->setex("address", 2, "Semarang");
+        });
+
+        $reponse = Redis::get("name");
+        self::assertEquals("Jabriel", $reponse);
+        $reponse = Redis::get("address");
+        self::assertEquals("Semarang", $reponse);
+
+    }
+
+    public function testTransaction()
+    {
+
+        Redis::transaction(function ($transaction) {
+            $transaction->setex("name", 2, "Jabriel");
+            $transaction->setex("address", 2, "Semarang");
+        });
+
+        $response = Redis::get("name");
+        self::assertEquals("Jabriel", $response);
+        $response = Redis::get("address");
+        self::assertEquals("Semarang", $response);
+
+    }
+
+    public function testRedisPublish()
+    {
+
+        for($i = 0; $i < 10; $i++) {
+            Redis::publish("channel-1", "Hello World - $i");
+            Redis::publish("channel-2", "Good Bye - $i");
+        }
+
+        self::assertTrue(true);
+
+    }
+
 
 }
